@@ -1,0 +1,39 @@
+schema-version: 1.0
+
+type: builder
+
+description: |
+  Le paquet DocBook-4.5 XML DTD-4.5 contient des définitions de type de documents pour vérifier les fichiers de données XML avec un ensemble de règles DocBook. Elles sont utiles pour structurer des livres et de la documentation logicielle en un standard qui vous permet d'utiliser des transformations déjà écrites pour ce standard.
+
+  Programmes installés: None
+  Bibliothèques installées: None
+  Fichiers installés: fichiers DTD, MOD et ENT
+  Répertoires installés: /etc/xml et /usr/share/xml/docbook/xml-dtd-4.5
+  Descriptions courtes
+  fichiers DTD: contient une définition de type de documents qui définie les types d'éléments et les listes d'attributs qui peuvent être utilisés dans les fichiers XML correspondants
+  fichiers MOD: contient les composants des définitions de type de documents qui sont récupérés dans les fichiers DTD
+  fichiers ENT: contient les listes des entités nommées permises en HTML
+  
+in:
+  version: "4.5"
+
+dependencies:
+  - libxml2
+  - sgml-common
+  - unzip
+
+provision:
+  - url:
+      from: https://www.docbook.org/xml/4.5/docbook-xml-{% version %}.zip
+      todir: "{% xbeeSrc %}"
+
+
+build:
+  - shell:
+      cmds:
+        - install -v -d -m755 {% xbeeOut %}/usr/share/xml/docbook/xml-dtd-4.5
+        - install -v -d -m755 {% xbeeOut %}/etc/xml
+        - cp -v -af docbook.cat *.dtd ent/ *.mod {% xbeeOut %}/usr/share/xml/docbook/xml-dtd-4.5
+        - "{{ .templates }}/docbook.sh"
+        - "{{ .templates }}/catalog.sh"
+      directory: "{% xbeeSrc %}"
